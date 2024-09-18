@@ -66,11 +66,10 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                 ex.Classification == UiRequiredExceptionClassification.BasicAction
                 && ex.Message.StartsWith("AADSTS50076", StringComparison.OrdinalIgnoreCase))
             {
-                this.logger.LogWarning("Warning: IWA failed, 2FA is required.");
-                this.logger.LogWarning("Warning: IWA can pass this requirement if you log into Windows with either a Smart Card or Windows Hello.");
+                this.logger.LogDebug("IWA failed, 2FA is required.");
                 throw;
             }
-            catch (MsalClientException ex) when (ex.Message.Contains("WS-Trust endpoint not found"))
+            catch (MsalClientException ex) when (ex.Message.Contains("WS-Trust endpoint not found") || ex.ErrorCode == "parsing_wstrust_response_failed")
             {
                 this.logger.LogDebug($"IWA only works on corporate AD backed network, AzureAuth is trying to use other auth flows if applicable.");
                 this.logger.LogDebug($"Turn on VPN for IWA mode to succeed.");
